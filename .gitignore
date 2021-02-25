@@ -131,3 +131,15 @@ build
 /target/
 
 .idea/sonarlint/**
+.idea/codeStyles/**
+.idea/**.xml
+.idea/modules/**.iml
+
+!lib/*.jar
+.idea/Terra.iml
+/run/
+.idea/**.iml
+/lang/
+/packs/
+/config.yml
+/region/
