@@ -1,7 +1,17 @@
 package com.dfsek.terra.api.util.mutable;
 
+import org.jetbrains.annotations.NotNull;
+
 public class MutableBoolean implements MutablePrimitive<Boolean> {
     private boolean value;
+
+    public MutableBoolean() {
+        this.value = false;
+    }
+
+    public MutableBoolean(boolean value) {
+        this.value = value;
+    }
 
     @Override
     public Boolean get() {
@@ -16,5 +26,10 @@ public class MutableBoolean implements MutablePrimitive<Boolean> {
     public boolean invert() {
         value = !value;
         return value;
+    }
+
+    @Override
+    public int compareTo(@NotNull Boolean o) {
+        return Boolean.compare(value, o);
     }
 }

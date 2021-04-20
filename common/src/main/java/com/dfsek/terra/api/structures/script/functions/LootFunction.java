@@ -1,6 +1,6 @@
 package com.dfsek.terra.api.structures.script.functions;
 
-import com.dfsek.terra.api.core.TerraPlugin;
+import com.dfsek.terra.api.TerraPlugin;
 import com.dfsek.terra.api.math.vector.Vector2;
 import com.dfsek.terra.api.math.vector.Vector3;
 import com.dfsek.terra.api.structures.loot.LootTable;
@@ -8,6 +8,7 @@ import com.dfsek.terra.api.structures.parser.lang.ImplementationArguments;
 import com.dfsek.terra.api.structures.parser.lang.Returnable;
 import com.dfsek.terra.api.structures.parser.lang.functions.Function;
 import com.dfsek.terra.api.structures.parser.lang.variables.Variable;
+import com.dfsek.terra.api.structures.script.StructureScript;
 import com.dfsek.terra.api.structures.script.TerraImplementationArguments;
 import com.dfsek.terra.api.structures.structure.RotationUtil;
 import com.dfsek.terra.api.structures.structure.buffer.items.BufferedLootApplication;
@@ -23,8 +24,9 @@ public class LootFunction implements Function<Void> {
     private final Returnable<Number> x, y, z;
     private final Position position;
     private final TerraPlugin main;
+    private final StructureScript script;
 
-    public LootFunction(LootRegistry registry, Returnable<Number> x, Returnable<Number> y, Returnable<Number> z, Returnable<String> data, TerraPlugin main, Position position) {
+    public LootFunction(LootRegistry registry, Returnable<Number> x, Returnable<Number> y, Returnable<Number> z, Returnable<String> data, TerraPlugin main, Position position, StructureScript script) {
         this.registry = registry;
         this.position = position;
         this.data = data;
@@ -32,6 +34,7 @@ public class LootFunction implements Function<Void> {
         this.y = y;
         this.z = z;
         this.main = main;
+        this.script = script;
     }
 
     @Override
@@ -45,11 +48,11 @@ public class LootFunction implements Function<Void> {
         LootTable table = registry.get(id);
 
         if(table == null) {
-            main.getLogger().severe("No such loot table " + id);
+            main.logger().severe("No such loot table " + id);
             return null;
         }
 
-        arguments.getBuffer().addItem(new BufferedLootApplication(table, main), new Vector3(FastMath.roundToInt(xz.getX()), y.apply(implementationArguments, variableMap).intValue(), FastMath.roundToInt(xz.getZ())).toLocation(arguments.getBuffer().getOrigin().getWorld()));
+        arguments.getBuffer().addItem(new BufferedLootApplication(table, main, script), new Vector3(FastMath.roundToInt(xz.getX()), y.apply(implementationArguments, variableMap).intValue(), FastMath.roundToInt(xz.getZ())).toLocation(arguments.getBuffer().getOrigin().getWorld()));
         return null;
     }
 

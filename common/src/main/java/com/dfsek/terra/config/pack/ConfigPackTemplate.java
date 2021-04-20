@@ -3,12 +3,15 @@ package com.dfsek.terra.config.pack;
 import com.dfsek.tectonic.annotations.Default;
 import com.dfsek.tectonic.annotations.Value;
 import com.dfsek.tectonic.config.ConfigTemplate;
+import com.dfsek.terra.api.addons.TerraAddon;
 import com.dfsek.terra.api.util.seeded.NoiseSeeded;
 import com.dfsek.terra.config.loaders.config.function.FunctionTemplate;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings({"unused", "FieldMayBeFinal"})
 public class ConfigPackTemplate implements ConfigTemplate {
@@ -17,6 +20,10 @@ public class ConfigPackTemplate implements ConfigTemplate {
 
     @Value("noise")
     private Map<String, NoiseSeeded> noiseBuilderMap;
+
+    @Value("addons")
+    @Default
+    private Set<TerraAddon> addons = new HashSet<>();
 
     @Value("variables")
     @Default
@@ -66,7 +73,47 @@ public class ConfigPackTemplate implements ConfigTemplate {
     @Default
     private String version = "0.1.0";
 
-    public Map<String, FunctionTemplate> getFunctions() {
+    @Value("disable.carvers")
+    @Default
+    private boolean disableCarvers = false;
+
+    @Value("disable.structures")
+    @Default
+    private boolean disableStructures = false;
+
+    @Value("disable.ores")
+    @Default
+    private boolean disableOres = false;
+
+    @Value("disable.trees")
+    @Default
+    private boolean disableTrees = false;
+
+    @Value("disable.flora")
+    @Default
+    private boolean disableFlora = false;
+
+    public boolean disableCarvers() {
+        return disableCarvers;
+    }
+
+    public boolean disableFlora() {
+        return disableFlora;
+    }
+
+    public boolean disableOres() {
+        return disableOres;
+    }
+
+    public boolean disableStructures() {
+        return disableStructures;
+    }
+
+    public boolean disableTrees() {
+        return disableTrees;
+    }
+
+    public LinkedHashMap<String, FunctionTemplate> getFunctions() {
         return functions;
     }
 
@@ -120,5 +167,9 @@ public class ConfigPackTemplate implements ConfigTemplate {
 
     public boolean doBetaCarvers() {
         return betaCarvers;
+    }
+
+    public Set<TerraAddon> getAddons() {
+        return addons;
     }
 }

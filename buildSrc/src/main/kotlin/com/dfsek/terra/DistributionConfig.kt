@@ -14,13 +14,9 @@ fun Project.configureDistribution() {
     apply(plugin = "java-library")
     apply(plugin = "com.github.johnrengelman.shadow")
 
-
-//    configurations.create("shaded")
-
     configurations {
         val shaded = create("shaded")
         getByName("compile").extendsFrom(shaded)
-//        shaded.extendsFrom(getByName("compile"))
         val shadedApi = create("shadedApi")
         shaded.extendsFrom(shadedApi)
         getByName("api").extendsFrom(shadedApi)
@@ -29,11 +25,8 @@ fun Project.configureDistribution() {
         getByName("implementation").extendsFrom(shadedImplementation)
     }
 
-//    tasks.withType<JavaCompile> {
-//        classpath +=
-//    }
-
     val downloadDefaultPacks = tasks.create("downloadDefaultPacks") {
+        group = "terra"
         doFirst {
             file("${buildDir}/resources/main/packs/").deleteRecursively()
 
@@ -69,8 +62,14 @@ fun Project.configureDistribution() {
         archiveClassifier.set("shaded")
         setVersion(project.version)
         relocate("org.apache.commons", "com.dfsek.terra.lib.commons")
-        relocate("parsii", "com.dfsek.terra.lib.parsii")
         relocate("net.jafama", "com.dfsek.terra.lib.jafama")
+        relocate("org.objectweb.asm", "com.dfsek.terra.lib.asm")
+        relocate("com.google.errorprone", "com.dfsek.terra.lib.google.errorprone")
+        relocate("com.google.j2objc", "com.dfsek.terra.lib.google.j2objc")
+        relocate("org.checkerframework", "com.dfsek.terra.lib.checkerframework")
+        relocate("org.javax.annotation", "com.dfsek.terra.lib.javax.annotation")
+        relocate("org.json", "com.dfsek.terra.lib.json")
+        relocate("org.yaml", "com.dfsek.terra.lib.yaml")
         minimize()
     }
     convention.getPlugin<BasePluginConvention>().archivesBaseName = project.name

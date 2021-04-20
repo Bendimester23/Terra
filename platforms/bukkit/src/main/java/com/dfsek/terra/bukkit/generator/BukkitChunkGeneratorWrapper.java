@@ -1,6 +1,6 @@
 package com.dfsek.terra.bukkit.generator;
 
-import com.dfsek.terra.api.core.TerraPlugin;
+import com.dfsek.terra.api.TerraPlugin;
 import com.dfsek.terra.api.platform.world.Chunk;
 import com.dfsek.terra.api.platform.world.generator.GeneratorWrapper;
 import com.dfsek.terra.api.world.generation.TerraBlockPopulator;
@@ -8,11 +8,10 @@ import com.dfsek.terra.api.world.generation.TerraChunkGenerator;
 import com.dfsek.terra.bukkit.population.PopulationManager;
 import com.dfsek.terra.bukkit.world.BukkitAdapter;
 import com.dfsek.terra.bukkit.world.BukkitBiomeGrid;
-import com.dfsek.terra.config.lang.LangUtil;
-import com.dfsek.terra.population.CavePopulator;
 import com.dfsek.terra.profiler.DataType;
 import com.dfsek.terra.profiler.Measurement;
 import com.dfsek.terra.world.TerraWorld;
+import com.dfsek.terra.world.population.CavePopulator;
 import com.dfsek.terra.world.population.FloraPopulator;
 import com.dfsek.terra.world.population.OrePopulator;
 import com.dfsek.terra.world.population.StructurePopulator;
@@ -24,12 +23,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class BukkitChunkGeneratorWrapper extends ChunkGenerator implements GeneratorWrapper {
@@ -42,20 +42,13 @@ public class BukkitChunkGeneratorWrapper extends ChunkGenerator implements Gener
 
     private final TerraPlugin main;
 
-    private final List<TerraBlockPopulator> populators = new LinkedList<>();
-
     private boolean needsLoad = true;
 
     public BukkitChunkGeneratorWrapper(TerraChunkGenerator delegate) {
         this.delegate = delegate;
         this.main = delegate.getMain();
-        popMan = new PopulationManager(main);
-        popMan.attach(new OrePopulator(main));
-        popMan.attach(new TreePopulator(main));
-        popMan.attach(new FloraPopulator(main));
-        populators.add(new CavePopulator(main));
-        populators.add(new StructurePopulator(main));
-        populators.add(popMan);
+        this.popMan = new PopulationManager(delegate, main);
+
     }
 
 
@@ -77,8 +70,8 @@ public class BukkitChunkGeneratorWrapper extends ChunkGenerator implements Gener
     private void load(com.dfsek.terra.api.platform.world.World w) {
         try {
             popMan.loadBlocks(w);
-        } catch(FileNotFoundException e) {
-            LangUtil.log("warning.no-population", Level.WARNING);
+        } catch(FileNotFoundException ignore) {
+
         } catch(IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -98,7 +91,7 @@ public class BukkitChunkGeneratorWrapper extends ChunkGenerator implements Gener
 
     @Override
     public @NotNull List<BlockPopulator> getDefaultPopulators(@NotNull World world) {
-        return populators.stream().map(BukkitPopulatorWrapper::new).collect(Collectors.toList());
+        return Arrays.asList(popMan, new BukkitPopulatorWrapper(delegate));
     }
 
     @Override
@@ -123,7 +116,7 @@ public class BukkitChunkGeneratorWrapper extends ChunkGenerator implements Gener
 
     @Override
     public boolean shouldGenerateStructures() {
-        return super.shouldGenerateStructures();
+        return delegate.shouldGenerateStructures();
     }
 
     @Override

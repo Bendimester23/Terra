@@ -1,14 +1,14 @@
 package com.dfsek.terra.world.population;
 
-import com.dfsek.terra.api.core.TerraPlugin;
+import com.dfsek.terra.api.TerraPlugin;
 import com.dfsek.terra.api.math.vector.Vector2;
 import com.dfsek.terra.api.platform.world.Chunk;
 import com.dfsek.terra.api.platform.world.World;
+import com.dfsek.terra.api.util.world.PopulationUtil;
+import com.dfsek.terra.api.world.biome.UserDefinedBiome;
+import com.dfsek.terra.api.world.biome.provider.BiomeProvider;
 import com.dfsek.terra.api.world.generation.TerraBlockPopulator;
-import com.dfsek.terra.biome.UserDefinedBiome;
-import com.dfsek.terra.biome.provider.BiomeProvider;
 import com.dfsek.terra.profiler.ProfileFuture;
-import com.dfsek.terra.util.PopulationUtil;
 import com.dfsek.terra.world.TerraWorld;
 import com.dfsek.terra.world.population.items.tree.TreeLayer;
 import net.jafama.FastMath;
@@ -33,6 +33,8 @@ public class TreePopulator implements TerraBlockPopulator {
     public void populate(@NotNull World world, @NotNull Chunk chunk) {
         TerraWorld tw = main.getWorld(world);
         try(ProfileFuture ignored = tw.getProfiler().measure("TreeTime")) {
+            if(tw.getConfig().getTemplate().disableTrees()) return;
+
             if(!tw.isSafe()) return;
             BiomeProvider provider = tw.getBiomeProvider();
             Random random = PopulationUtil.getRandom(chunk);
